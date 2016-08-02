@@ -65,8 +65,9 @@ public class ContentFragment extends BaseFragment {
 
 
     private void setSpanCount(int count) {
-        if (count == getSpanCount()) return;
-        ((GridLayoutManager) rv.getLayoutManager()).setSpanCount(count);
-        rv.getAdapter().notifyDataSetChanged();
+        GridLayoutManager manager = (GridLayoutManager) rv.getLayoutManager();
+        if (count == manager.getSpanCount()) return;
+        manager.setSpanCount(count);
+        rv.getAdapter().notifyItemRangeChanged(0, 0);
     }
 }
