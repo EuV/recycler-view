@@ -3,13 +3,14 @@ package ru.yandex.yamblz.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import ru.yandex.yamblz.R;
 
 public class ContentFragment extends BaseFragment {
@@ -23,10 +24,49 @@ public class ContentFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_content, container, false);
     }
 
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
         rv.setAdapter(new ContentAdapter());
+        rv.getRecycledViewPool().setMaxRecycledViews(0, 100);
+    }
+
+
+    @OnClick(R.id.minus)
+    void decreaseSpanCount() {
+        setSpanCount(Math.max(getSpanCount() - 1, 1));
+
+    }
+
+
+    @OnClick(R.id.plus)
+    void increaseSpanCount() {
+        setSpanCount(Math.min(getSpanCount() + 1, 30));
+    }
+
+
+    @OnClick(R.id.one)
+    void setOneSpan() {
+        setSpanCount(1);
+    }
+
+
+    @OnClick(R.id.thirty)
+    void setThirtySpans() {
+        setSpanCount(30);
+    }
+
+
+    private int getSpanCount() {
+        return ((GridLayoutManager) rv.getLayoutManager()).getSpanCount();
+    }
+
+
+    private void setSpanCount(int count) {
+        if (count == getSpanCount()) return;
+        ((GridLayoutManager) rv.getLayoutManager()).setSpanCount(count);
+        rv.getAdapter().notifyDataSetChanged();
     }
 }
