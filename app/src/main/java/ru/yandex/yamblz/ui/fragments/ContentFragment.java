@@ -1,6 +1,9 @@
 package ru.yandex.yamblz.ui.fragments;
 
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +23,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import ru.yandex.yamblz.R;
 
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static android.support.v7.widget.helper.ItemTouchHelper.DOWN;
 import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
 import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
@@ -97,9 +101,11 @@ public class ContentFragment extends BaseFragment {
 
     private static class TouchCallback extends Callback {
         private final ContentAdapter adapter;
+        private final Paint paint = new Paint();
 
         public TouchCallback(ContentAdapter adapter) {
             this.adapter = adapter;
+            paint.setColor(Color.RED);
         }
 
         @Override
@@ -115,6 +121,17 @@ public class ContentFragment extends BaseFragment {
         @Override
         public void onSwiped(ViewHolder viewHolder, int direction) {
             adapter.remove(viewHolder.getAdapterPosition());
+        }
+
+        @Override
+        public void onChildDraw(Canvas c, RecyclerView recyclerView, ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            if (actionState == ACTION_STATE_SWIPE) {
+                View v = viewHolder.itemView;
+                float factor = Math.min(dX / v.getWidth(), 1);
+                paint.setAlpha((int) (factor * 255));
+                c.drawRect(v.getLeft(), v.getTop(), v.getLeft() + Math.min(dX, v.getWidth()), v.getBottom(), paint);
+            }
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     }
 
