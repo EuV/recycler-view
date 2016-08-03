@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import ru.yandex.yamblz.R;
+
+import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
 class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentHolder> {
 
@@ -23,19 +26,41 @@ class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentHolder> 
         return new ContentHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item, parent, false));
     }
 
+
     @Override
     public void onBindViewHolder(ContentHolder holder, int position) {
         holder.bind(createColorForPosition(position));
     }
+
 
     @Override
     public int getItemCount() {
         return Integer.MAX_VALUE;
     }
 
-    public void removeItem(int position) {
+
+    public void remove(int position) {
+        if (position == NO_POSITION) return;
         colors.remove(position);
+        notifyItemRemoved(position);
     }
+
+
+    public boolean swap(int from, int to) {
+        if (from == NO_POSITION || to == NO_POSITION) return false;
+        if (from < to) {
+            for (int i = from; i < to; i++) {
+                Collections.swap(colors, i, i + 1);
+            }
+        } else {
+            for (int i = from; i > to; i--) {
+                Collections.swap(colors, i, i - 1);
+            }
+        }
+        notifyItemMoved(from, to);
+        return true;
+    }
+
 
     private Integer createColorForPosition(int position) {
         if (position >= colors.size()) {
@@ -43,6 +68,7 @@ class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentHolder> 
         }
         return colors.get(position);
     }
+
 
     static class ContentHolder extends RecyclerView.ViewHolder {
         ContentHolder(View itemView) {

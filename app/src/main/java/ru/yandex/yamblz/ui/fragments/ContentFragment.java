@@ -7,7 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.support.v7.widget.helper.ItemTouchHelper.SimpleCallback;
+import android.support.v7.widget.helper.ItemTouchHelper.Callback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +15,11 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.yandex.yamblz.R;
+
+import static android.support.v7.widget.helper.ItemTouchHelper.DOWN;
+import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
+import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
+import static android.support.v7.widget.helper.ItemTouchHelper.UP;
 
 public class ContentFragment extends BaseFragment {
 
@@ -31,10 +36,11 @@ public class ContentFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ContentAdapter adapter = new ContentAdapter();
         rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        rv.setAdapter(new ContentAdapter());
+        rv.setAdapter(adapter);
         rv.getRecycledViewPool().setMaxRecycledViews(0, 100);
-        new ItemTouchHelper(new CustomCallback(rv)).attachToRecyclerView(rv);
+        new ItemTouchHelper(new TouchCallback(adapter)).attachToRecyclerView(rv);
     }
 
 
@@ -76,27 +82,26 @@ public class ContentFragment extends BaseFragment {
     }
 
 
-    private static class CustomCallback extends SimpleCallback {
-        private final RecyclerView rv;
+    private static class TouchCallback extends Callback {
+        private final ContentAdapter adapter;
 
-        public CustomCallback(RecyclerView rv) {
-            super(0, ItemTouchHelper.RIGHT);
-            this.rv = rv;
+        public TouchCallback(ContentAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, ViewHolder viewHolder) {
+            return makeMovementFlags(LEFT | UP | RIGHT | DOWN, RIGHT);
         }
 
         @Override
         public boolean onMove(RecyclerView recyclerView, ViewHolder viewHolder, ViewHolder target) {
-            return false;
+            return adapter.swap(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         }
 
         @Override
         public void onSwiped(ViewHolder viewHolder, int direction) {
-            int position = viewHolder.getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                ContentAdapter adapter = (ContentAdapter) rv.getAdapter();
-                adapter.removeItem(position);
-                adapter.notifyItemRemoved(position);
-            }
+            adapter.remove(viewHolder.getAdapterPosition());
         }
     }
 }
