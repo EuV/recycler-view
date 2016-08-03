@@ -23,7 +23,10 @@ class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentHolder> 
 
     @Override
     public ContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ContentHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item, parent, false));
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item, parent, false);
+        ContentHolder holder = new ContentHolder(view);
+        view.setOnClickListener(v -> change(holder.getAdapterPosition()));
+        return holder;
     }
 
 
@@ -62,11 +65,23 @@ class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentHolder> 
     }
 
 
+    private void change(int position) {
+        if (position == NO_POSITION) return;
+        colors.set(position, generateColor());
+        notifyItemChanged(position);
+    }
+
+
     private Integer createColorForPosition(int position) {
         if (position >= colors.size()) {
-            colors.add(Color.rgb(rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255)));
+            colors.add(generateColor());
         }
         return colors.get(position);
+    }
+
+
+    private int generateColor() {
+        return Color.rgb(rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255));
     }
 
 
