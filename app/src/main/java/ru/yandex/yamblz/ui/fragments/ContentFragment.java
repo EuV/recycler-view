@@ -1,10 +1,14 @@
 package ru.yandex.yamblz.ui.fragments;
 
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ItemDecoration;
+import android.support.v7.widget.RecyclerView.State;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.support.v7.widget.helper.ItemTouchHelper.Callback;
@@ -22,6 +26,7 @@ import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
 import static android.support.v7.widget.helper.ItemTouchHelper.UP;
 
 public class ContentFragment extends BaseFragment {
+    private final BorderDecorator borderDecorator = new BorderDecorator();
 
     @BindView(R.id.rv)
     RecyclerView rv;
@@ -38,6 +43,7 @@ public class ContentFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         ContentAdapter adapter = new ContentAdapter();
         rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        rv.addItemDecoration(borderDecorator);
         rv.setAdapter(adapter);
         rv.getRecycledViewPool().setMaxRecycledViews(0, 100);
         new ItemTouchHelper(new TouchCallback(adapter)).attachToRecyclerView(rv);
@@ -66,6 +72,13 @@ public class ContentFragment extends BaseFragment {
     @OnClick(R.id.thirty)
     void setThirtySpans() {
         setSpanCount(30);
+    }
+
+
+    @OnClick(R.id.stylish)
+    void changeRecyclerStyle() {
+        borderDecorator.changeStyle();
+        rv.invalidateItemDecorations();
     }
 
 
@@ -102,6 +115,29 @@ public class ContentFragment extends BaseFragment {
         @Override
         public void onSwiped(ViewHolder viewHolder, int direction) {
             adapter.remove(viewHolder.getAdapterPosition());
+        }
+    }
+
+
+    private static class BorderDecorator extends ItemDecoration {
+        private static final int BORDER_SIZE_DP = 2;
+        private static final int BORDER_SIZE_PX = dpToPx(BORDER_SIZE_DP);
+
+        private boolean hasBorder = false;
+
+        public void changeStyle() {
+            hasBorder = !hasBorder;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) {
+            boolean even = (parent.getChildAdapterPosition(view) % 2 == 0);
+            int border = (even && hasBorder) ? BORDER_SIZE_PX : 0;
+            outRect.set(border, border, border, border);
+        }
+
+        private static int dpToPx(float dp) {
+            return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
         }
     }
 }
