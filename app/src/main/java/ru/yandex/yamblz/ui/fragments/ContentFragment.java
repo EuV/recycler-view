@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.support.v7.widget.helper.ItemTouchHelper.SimpleCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +34,7 @@ public class ContentFragment extends BaseFragment {
         rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
         rv.setAdapter(new ContentAdapter());
         rv.getRecycledViewPool().setMaxRecycledViews(0, 100);
+        new ItemTouchHelper(new CustomCallback(rv)).attachToRecyclerView(rv);
     }
 
 
@@ -69,5 +73,30 @@ public class ContentFragment extends BaseFragment {
         if (count == manager.getSpanCount()) return;
         manager.setSpanCount(count);
         rv.getAdapter().notifyItemRangeChanged(0, 0);
+    }
+
+
+    private static class CustomCallback extends SimpleCallback {
+        private final RecyclerView rv;
+
+        public CustomCallback(RecyclerView rv) {
+            super(0, ItemTouchHelper.RIGHT);
+            this.rv = rv;
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, ViewHolder viewHolder, ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                ContentAdapter adapter = (ContentAdapter) rv.getAdapter();
+                adapter.removeItem(position);
+                adapter.notifyItemRemoved(position);
+            }
+        }
     }
 }

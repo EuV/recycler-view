@@ -33,6 +33,10 @@ class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentHolder> 
         return Integer.MAX_VALUE;
     }
 
+    public void removeItem(int position) {
+        colors.remove(position);
+    }
+
     private Integer createColorForPosition(int position) {
         if (position >= colors.size()) {
             colors.add(Color.rgb(rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255)));
