@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,7 +23,9 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ru.yandex.yamblz.R;
+import ru.yandex.yamblz.ui.fragments.ContentAdapter.ContentHolder;
 
+import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static android.support.v7.widget.helper.ItemTouchHelper.DOWN;
 import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
@@ -140,10 +143,39 @@ public class ContentFragment extends BaseFragment {
         private static final int BORDER_SIZE_DP = 2;
         private static final int BORDER_SIZE_PX = dpToPx(BORDER_SIZE_DP);
 
+        private static final int MARK_RADIUS_DP = 2;
+        private static final int MARK_RADIUS_PX = dpToPx(MARK_RADIUS_DP);
+
+        private static final Paint PAINT_A = new Paint(ANTI_ALIAS_FLAG);
+        private static final Paint PAINT_B = new Paint(ANTI_ALIAS_FLAG);
+        private static final Paint PAINT_BORDER = new Paint(ANTI_ALIAS_FLAG);
+
+        static {
+            PAINT_A.setColor(Color.RED);
+            PAINT_B.setColor(Color.YELLOW);
+            PAINT_BORDER.setColor(Color.BLACK);
+            PAINT_BORDER.setStrokeWidth(MARK_RADIUS_PX / 3);
+            PAINT_BORDER.setStyle(Style.STROKE);
+        }
+
         private boolean hasBorder = false;
 
         public void changeStyle() {
             hasBorder = !hasBorder;
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, State state) {
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                View v = parent.getChildAt(i);
+                ContentHolder holder = (ContentHolder) parent.getChildViewHolder(v);
+                if (holder.isTagged()) {
+                    float left = v.getLeft() + (v.getWidth() / 2) + v.getTranslationX() - MARK_RADIUS_PX;
+                    float top = v.getTop() + (v.getHeight() / 13) + v.getTranslationY();
+                    c.drawCircle(left, top, MARK_RADIUS_PX, holder.isTaggedA() ? PAINT_A : PAINT_B);
+                    c.drawCircle(left, top, MARK_RADIUS_PX, PAINT_BORDER);
+                }
+            }
         }
 
         @Override
