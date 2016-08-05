@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.support.v7.widget.RecyclerView.State;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -48,19 +49,32 @@ public class ContentFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         ContentAdapter adapter = new ContentAdapter();
         rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
         rv.addItemDecoration(borderDecorator);
         rv.setAdapter(adapter);
         rv.getRecycledViewPool().setMaxRecycledViews(0, 100);
         new ItemTouchHelper(new TouchCallback(adapter)).attachToRecyclerView(rv);
+
+        /**
+         * We can't use it since items actually changes.
+         * Also, gives no actual performance improvements in test (used with {@link Adapter#getItemId(int)}).
+         */
+
+        // adapter.setHasStableIds(true);
+
+        /**
+         * Disables animation when column count changes; no actual performance improvements.
+         */
+
+        // rv.setHasFixedSize(true);
     }
 
 
     @OnClick(R.id.minus)
     void decreaseSpanCount() {
         setSpanCount(Math.max(getSpanCount() - 1, 1));
-
     }
 
 
