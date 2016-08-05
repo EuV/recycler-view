@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.support.v7.widget.RecyclerView.State;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,15 +37,21 @@ public class ContentFragment extends BaseFragment {
 
 
     /**
-     * We can't use {@code adapter.setHasStableIds(true)} since items change.
+     * We can't use {@link Adapter#setHasStableIds(boolean)} since items change.
      * Also, it gives no actual performance improvements in tests (used with
      * {@link Adapter#getItemId(int)}).
      * <p>
-     * {@code rv.setHasFixedSize(true)} disables animation when columns count changes,
-     * and it also gives no performance improvements in tests.
+     * {@link RecyclerView#setHasFixedSize(boolean)} *disables* animation when columns
+     * count changes, and gives no performance improvements in tests.
+     * <p>
+     * {@link RecyclerView#setItemViewCacheSize(int)} slows down application: in case of
+     * fast 30-columns scrolling there will be lots of view holders we can't reuse unchanged.
+     * <p>
+     * {@link LinearLayoutManager#getExtraLayoutSpace(State)} on my device has no effect
+     * in case of using a little extra space and adds lags when set to thousands of pixels.
      * <p>
      * Things really go better when we don't set text into view in {@link ContentHolder}
-     * or when using {@link TextView#setMaxLines(int)} or {@link TextView#setSingleLine()}
+     * or when using {@link TextView#setMaxLines(int)} or {@link TextView#setSingleLine()}.
      */
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
