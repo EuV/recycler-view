@@ -1,4 +1,4 @@
-package ru.yandex.yamblz.ui.fragments;
+package ru.yandex.yamblz.ui.adapters;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView.Adapter;
@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Random;
 
 import ru.yandex.yamblz.R;
-import ru.yandex.yamblz.ui.fragments.ContentAdapter.ContentHolder;
+import ru.yandex.yamblz.ui.adapters.ContentAdapter.ContentHolder;
 
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
 
-class ContentAdapter extends Adapter<ContentHolder> {
+public class ContentAdapter extends Adapter<ContentHolder> implements IContentAdapter {
 
     private final Random rnd = new Random();
     private final List<Integer> colors = new ArrayList<>();
@@ -30,14 +30,14 @@ class ContentAdapter extends Adapter<ContentHolder> {
     public ContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_item, parent, false);
         ContentHolder holder = new ContentHolder(view);
-        view.setOnClickListener(v -> change(holder.getAdapterPosition()));
+        view.setOnClickListener(v -> changeItem(holder.getAdapterPosition()));
         return holder;
     }
 
 
     @Override
     public void onBindViewHolder(ContentHolder holder, int position) {
-        holder.bind(createColorForPosition(position));
+        holder.bind(getOrCreateColorForPosition(position));
     }
 
 
@@ -47,7 +47,16 @@ class ContentAdapter extends Adapter<ContentHolder> {
     }
 
 
-    public void remove(int position) {
+    @Override
+    public void changeItem(int position) {
+        if (position == NO_POSITION) return;
+        colors.set(position, generateColor());
+        notifyItemChanged(position);
+    }
+
+
+    @Override
+    public void removeItem(int position) {
         if (position == NO_POSITION) return;
 
         colors.remove(position);
@@ -59,7 +68,8 @@ class ContentAdapter extends Adapter<ContentHolder> {
     }
 
 
-    public boolean swap(int from, int to) {
+    @Override
+    public boolean swapItems(int from, int to) {
         if (from == to || from == NO_POSITION || to == NO_POSITION) {
             return false;
         }
@@ -82,13 +92,6 @@ class ContentAdapter extends Adapter<ContentHolder> {
     }
 
 
-    private void change(int position) {
-        if (position == NO_POSITION) return;
-        colors.set(position, generateColor());
-        notifyItemChanged(position);
-    }
-
-
     private int getTagPosition(int tagPosition, int removedPosition) {
         if (removedPosition == tagPosition) {
             return NO_POSITION;
@@ -102,7 +105,7 @@ class ContentAdapter extends Adapter<ContentHolder> {
     }
 
 
-    private Integer createColorForPosition(int position) {
+    private Integer getOrCreateColorForPosition(int position) {
         if (position >= colors.size()) {
             colors.add(generateColor());
         }
@@ -115,7 +118,7 @@ class ContentAdapter extends Adapter<ContentHolder> {
     }
 
 
-    class ContentHolder extends ViewHolder {
+    public class ContentHolder extends ViewHolder {
         ContentHolder(View itemView) {
             super(itemView);
         }
