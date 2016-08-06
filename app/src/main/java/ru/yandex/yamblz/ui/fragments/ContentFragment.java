@@ -11,8 +11,11 @@ import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.State;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -29,6 +32,7 @@ public class ContentFragment extends BaseFragment {
 
     @BindView(R.id.rv)
     RecyclerView rv;
+    ContentAdapter adapter;
 
     @NonNull
     @Override
@@ -62,15 +66,29 @@ public class ContentFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        rv.setAdapter(new ContentAdapter());
         rv.addItemDecoration(borderDecorator);
         rv.addItemDecoration(new TagDecorator());
+        rv.setAdapter(adapter = new ContentAdapter());
         rv.getRecycledViewPool().setMaxRecycledViews(0, 100);
 
-        new ItemTouchHelper(new TouchCallback(rv.getAdapter())).attachToRecyclerView(rv);
+        new ItemTouchHelper(new TouchCallback(adapter)).attachToRecyclerView(rv);
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        View view = menu.findItem(R.id.menu_switch).getActionView();
+        Switch switcher = (Switch) view.findViewById(R.id.animate_switch);
+        switcher.setOnCheckedChangeListener((v, isChecked) -> adapter.setAnimationEnabled(isChecked));
+    }
 
     @OnClick(R.id.minus)
     void decreaseSpanCount() {

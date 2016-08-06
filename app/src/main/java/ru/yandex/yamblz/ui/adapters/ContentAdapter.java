@@ -26,6 +26,7 @@ public class ContentAdapter extends Adapter<ContentHolder> implements IContentAd
 
     private int tagPositionA = NO_POSITION;
     private int tagPositionB = NO_POSITION;
+    private boolean animationEnabled;
 
     @Override
     public ContentHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,7 +45,9 @@ public class ContentAdapter extends Adapter<ContentHolder> implements IContentAd
 
     @Override
     public void onViewAttachedToWindow(ContentHolder holder) {
-        holder.animate();
+        if (animationEnabled) {
+            holder.animate();
+        }
     }
 
 
@@ -102,6 +105,11 @@ public class ContentAdapter extends Adapter<ContentHolder> implements IContentAd
 
         notifyItemMoved(from, to);
         return true;
+    }
+
+
+    public void setAnimationEnabled(boolean enabled) {
+        animationEnabled = enabled;
     }
 
 
