@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.State;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -52,6 +53,10 @@ public class ContentFragment extends BaseFragment {
      * <p>
      * Things really go better when we don't set text into view in {@link ContentHolder}
      * or when using {@link TextView#setMaxLines(int)} or {@link TextView#setSingleLine()}.
+     * <p>
+     * Also, we don't use custom {@link ItemAnimator} for the appearance animation because,
+     * as mentioned it its documentation, it used to handle changes in the adapter, not
+     * items emergence.
      */
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {

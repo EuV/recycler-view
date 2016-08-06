@@ -17,6 +17,7 @@ import ru.yandex.yamblz.R;
 import ru.yandex.yamblz.ui.adapters.ContentAdapter.ContentHolder;
 
 import static android.support.v7.widget.RecyclerView.NO_POSITION;
+import static android.view.animation.AnimationUtils.loadAnimation;
 
 public class ContentAdapter extends Adapter<ContentHolder> implements IContentAdapter {
 
@@ -38,6 +39,18 @@ public class ContentAdapter extends Adapter<ContentHolder> implements IContentAd
     @Override
     public void onBindViewHolder(ContentHolder holder, int position) {
         holder.bind(getOrCreateColorForPosition(position));
+    }
+
+
+    @Override
+    public void onViewAttachedToWindow(ContentHolder holder) {
+        holder.animate();
+    }
+
+
+    @Override
+    public void onViewDetachedFromWindow(ContentHolder holder) {
+        holder.stopAnimation();
     }
 
 
@@ -126,6 +139,14 @@ public class ContentAdapter extends Adapter<ContentHolder> implements IContentAd
         void bind(Integer color) {
             itemView.setBackgroundColor(color);
             ((TextView) itemView).setText("#".concat(Integer.toHexString(color).substring(2)));
+        }
+
+        void animate() {
+            itemView.startAnimation(loadAnimation(itemView.getContext(), R.anim.appearance));
+        }
+
+        void stopAnimation() {
+            itemView.clearAnimation();
         }
 
         public boolean isTagged() {
