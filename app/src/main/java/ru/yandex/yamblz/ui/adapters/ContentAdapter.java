@@ -127,7 +127,8 @@ public class ContentAdapter extends Adapter<ContentHolder> implements IContentAd
 
 
     private Integer getOrCreateColorForPosition(int position) {
-        if (position >= colors.size()) {
+        int size = colors.size();
+        while (size++ <= position) {
             colors.add(generateColor());
         }
         return colors.get(position);
