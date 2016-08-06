@@ -1,6 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rv"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    tools:ignore="RtlHardcoded,HardcodedText">
+
+    <Button
+        android:id="@+id/minus"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="-"/>
+
+    <Button
+        android:id="@+id/plus"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/minus"
+        android:text="+"/>
+
+    <Button
+        android:id="@+id/one"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/plus"
+        android:text="1"/>
+
+    <Button
+        android:id="@+id/thirty"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/one"
+        android:text="30"/>
+
+    <Button
+        android:id="@+id/stylish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/thirty"
+        android:text="stylish"/>
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/plus"/>
+
+</RelativeLayout>
